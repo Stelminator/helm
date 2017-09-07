@@ -292,7 +292,7 @@ func ensureDefaultRepos(home helmpath.Home, out io.Writer, skipRefresh bool) err
 	if fi, err := os.Stat(repoFile); err != nil {
 		fmt.Fprintf(out, "Creating %s \n", repoFile)
 		f := repo.NewRepoFile()
-		sr, err := initStableRepo(home.CacheIndex(stableRepository), skipRefresh)
+		sr, err := initStableRepo(home.CacheIndex(stableRepository), skipRefresh, home)
 		if err != nil {
 			return err
 		}
@@ -311,7 +311,7 @@ func ensureDefaultRepos(home helmpath.Home, out io.Writer, skipRefresh bool) err
 	return nil
 }
 
-func initStableRepo(cacheFile string, skipRefresh bool) (*repo.Entry, error) {
+func initStableRepo(cacheFile string, skipRefresh bool, home helmpath.Home) (*repo.Entry, error) {
 	c := repo.Entry{
 		Name:  stableRepository,
 		URL:   stableRepositoryURL,
@@ -328,7 +328,7 @@ func initStableRepo(cacheFile string, skipRefresh bool) (*repo.Entry, error) {
 
 	// In this case, the cacheFile is always absolute. So passing empty string
 	// is safe.
-	if err := r.DownloadIndexFile(""); err != nil {
+	if err := r.DownloadIndexFile(home.String()); err != nil {
 		return nil, fmt.Errorf("Looks like %q is not a valid chart repository or cannot be reached: %s", stableRepositoryURL, err.Error())
 	}
 
