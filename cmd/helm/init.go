@@ -292,7 +292,7 @@ func ensureDefaultRepos(home helmpath.Home, out io.Writer, skipRefresh bool) err
 	if fi, err := os.Stat(repoFile); err != nil {
 		fmt.Fprintf(out, "Creating %s \n", repoFile)
 		f := repo.NewRepoFile()
-		sr, err := initStableRepo(home.RelativeIndex(stableRepository), skipRefresh, home)
+		sr, err := initStableRepo(home.RelativeIndex(stableRepository), out, skipRefresh, home)
 		if err != nil {
 			return err
 		}
@@ -311,7 +311,9 @@ func ensureDefaultRepos(home helmpath.Home, out io.Writer, skipRefresh bool) err
 	return nil
 }
 
-func initStableRepo(cacheFile string, skipRefresh bool, home helmpath.Home) (*repo.Entry, error) {
+
+func initStableRepo(cacheFile string, out io.Writer, skipRefresh bool, home helmpath.Home) (*repo.Entry, error) {
+	fmt.Fprintf(out, "Adding %s repo with URL: %s \n", stableRepository, stableRepositoryURL)
 	c := repo.Entry{
 		Name:  stableRepository,
 		URL:   stableRepositoryURL,
